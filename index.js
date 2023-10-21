@@ -1,8 +1,8 @@
 const express = require("express");
+const app = express();
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
-const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -30,12 +30,11 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
 
         const ProductsCollection = client.db("ProductsDB").collection("Products");
 
         const BrandCollection = client.db("BrandNameDB").collection("BrandName");
-
 
         const addCollection = client.db("AddProduct").collection("addProduct");
 
@@ -72,18 +71,9 @@ async function run() {
             const query = { brandname: brandname };
             const cursor = ProductsCollection.find(query);
             const result = await cursor.toArray();
+            
             res.send(result);
         });
-
-
-
-        app.get("/BrandName", async (req, res) => {
-
-            const cursor = BrandCollection.find();
-            const result = await cursor.toArray();
-            res.send(result);
-
-        })
 
 
         app.get("/updateproducts/:id", async (req, res) => {
@@ -95,6 +85,15 @@ async function run() {
         });
 
 
+
+
+        app.get("/BrandName", async (req, res) => {
+
+            const cursor = BrandCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
 
         app.get("/cartproduct", async (req, res) => {
             const cursor = addCollection.find();
@@ -109,8 +108,6 @@ async function run() {
             const result = await ProductsCollection.insertOne(Products);
             res.send(result)
         })
-
-
 
 
         app.post("/addproduct", async (req, res) => {
@@ -155,7 +152,7 @@ async function run() {
         })
 
 
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // await client.close();
